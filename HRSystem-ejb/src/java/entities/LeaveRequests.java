@@ -53,11 +53,19 @@ public class LeaveRequests implements Serializable {
     private String reason;
     @Column(name = "Status")
     private String status;
+    @Column(name = "RejectedReason")
+    private String rejectedReason;
     @OneToMany(mappedBy = "leaveRequestId")
     private List<LeaveApprovals> leaveApprovalsList;
     @JoinColumn(name = "EmployeeID", referencedColumnName = "Id")
     @ManyToOne
     private Employees employeeID;
+
+    public LeaveRequests(Integer id, String status, String rejectedReason) {
+        this.id = id;
+        this.status = status;
+        this.rejectedReason = rejectedReason;
+    }
 
     public LeaveRequests() {
     }
@@ -122,4 +130,11 @@ public class LeaveRequests implements Serializable {
         this.employeeID = employeeID;
     }
 
+    public String getRejectedReason() {
+        return rejectedReason;
+    }
+
+    public void setRejectedReason(String rejectedReason) {
+        this.rejectedReason = rejectedReason;
+    }
 }

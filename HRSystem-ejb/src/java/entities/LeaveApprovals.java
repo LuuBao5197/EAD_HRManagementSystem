@@ -82,5 +82,5 @@ public class LeaveApprovals implements Serializable {
     public void setApprovalBy(Manager approvalBy) {
         this.approvalBy = approvalBy;
     }
-    
+
 }
