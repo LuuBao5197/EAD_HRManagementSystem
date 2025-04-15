@@ -13,6 +13,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.NamedQueries;
 import jakarta.persistence.NamedQuery;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.io.Serializable;
 import java.util.List;
@@ -84,7 +85,7 @@ public class Accounts implements Serializable {
         this.passwordHash = passwordHash;
         this.role = role;
     }
-
+    
     public Integer getId() {
         return id;
     }

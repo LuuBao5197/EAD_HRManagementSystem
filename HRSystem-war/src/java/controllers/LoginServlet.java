@@ -4,7 +4,7 @@
  */
 package controllers;
 import beans.LoginSBLocal;
-import entities.Accounts;
+import entities.*;
 import jakarta.ejb.EJB;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -12,6 +12,8 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -49,10 +51,12 @@ public class LoginServlet extends HttpServlet {
                                 request.getSession().setAttribute("acc", acc);
                                 request.getRequestDispatcher("ManagerHome.jsp").forward(request, response);
                             } else if (acc.getRole().contains("Employee")) {
+                                
                                 request.getSession().setAttribute("acc", acc);
+                                List<LeaveRequests> leaveList = sb.FindAllLeaveRequests(acc.getUsername());
+                                request.setAttribute("leaverequestlist", leaveList);
                                 request.getRequestDispatcher("EmployeeHome.jsp").forward(request, response);
                             }
-
                         } else {
                             request.setAttribute("error", "This account is not exist. Try again");
                             request.getRequestDispatcher("login.jsp").forward(request, response);
@@ -75,6 +79,40 @@ public class LoginServlet extends HttpServlet {
                         request.setAttribute("msg", "Create new account successfully!");
                         request.getRequestDispatcher("AdminHome.jsp").forward(request, response);
                         break;
+                    case "CreateLeaveRequest":
+                        try {
+                            String startDateStr = request.getParameter("startDate");
+                            String endDateStr = request.getParameter("endDate");
+                            String reason = request.getParameter("reason");
+
+                            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                            Date startDate = sdf.parse(startDateStr);
+                            Date endDate = sdf.parse(endDateStr);
+
+                            // Lấy tài khoản đăng nhập
+                            Accounts currentAcc = (Accounts) request.getSession().getAttribute("acc");
+
+                            List<Employees> empList = currentAcc.getEmployeesList();
+                            if (empList == null || empList.isEmpty()) {
+                                request.setAttribute("error", "Không tìm thấy thông tin nhân viên.");
+                                request.getRequestDispatcher("CreateLeaveRequest.jsp").forward(request, response);
+                                return;
+                            }
+
+                            Employees employee = empList.get(0); // giả sử mỗi account chỉ có 1 employee
+
+                            LeaveRequests newRequest = new LeaveRequests(startDate, endDate, reason, "Pending", employee);
+                            sb.createLeaveRequest(newRequest);
+
+                            request.setAttribute("msg", "Gửi đơn xin nghỉ thành công!");
+                            request.getRequestDispatcher("success.html").forward(request, response);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            request.setAttribute("error", "Có lỗi xảy ra khi gửi đơn nghỉ: " + e.getMessage());
+                            request.getRequestDispatcher("CreateLeaveRequest.jsp").forward(request, response);
+                        }
+                        break;
+                        
                     default:
                         throw new AssertionError();
                 }

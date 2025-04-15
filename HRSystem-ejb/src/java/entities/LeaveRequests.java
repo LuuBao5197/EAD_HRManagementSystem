@@ -62,6 +62,16 @@ public class LeaveRequests implements Serializable {
     public LeaveRequests() {
     }
 
+    public LeaveRequests(Date startDate, Date endDate, String reason, String status, Employees employeeID) {
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.reason = reason;
+        this.status = status;
+        this.employeeID = employeeID;
+    }
+
+    
+    
     public LeaveRequests(Integer id) {
         this.id = id;
     }

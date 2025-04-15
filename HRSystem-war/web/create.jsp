@@ -51,7 +51,7 @@
 
             </select>
 
-            <input type="submit" value="Create" name="action"/>
+            <input type="submit" value="CreateLeaveRequest" name="action"/>
         </form>
     </body>
 </html>

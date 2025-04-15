@@ -5,6 +5,8 @@
 package beans;
 
 import entities.Accounts;
+import entities.Employees;
+import entities.LeaveRequests;
 import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
@@ -61,4 +63,39 @@ public class LoginSB implements LoginSBLocal {
 
         return em.createNativeQuery(query, Accounts.class).getResultList();
     }
+
+    @Override
+    public List<LeaveRequests> FindAllLeaveRequests(String username) {
+        try {
+            // Lấy Account trước
+            Accounts acc = em.createQuery("SELECT a FROM Accounts a WHERE a.username = :username", Accounts.class)
+                             .setParameter("username", username)
+                             .getSingleResult();
+
+            // Lấy danh sách employee gắn với account này
+            List<Employees> empList = acc.getEmployeesList();
+
+            if (empList == null || empList.isEmpty()) {
+                return List.of(); // không có employee
+            }
+
+            Employees emp = empList.get(0); // Giả sử mỗi account chỉ có 1 employee
+
+            return em.createQuery("SELECT lr FROM LeaveRequests lr WHERE lr.employeeID = :emp", LeaveRequests.class)
+                     .setParameter("emp", emp)
+                     .getResultList();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return List.of();
+        }
+    }
+
+
+    @Override
+    public void createLeaveRequest(LeaveRequests request) {
+        em.persist(request);
+    }
+
+    
+    
 }

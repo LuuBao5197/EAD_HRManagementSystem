@@ -4,7 +4,7 @@
  */
 package beans;
 
-import entities.Accounts;
+import entities.*;
 import jakarta.ejb.Local;
 import java.util.List;
 
@@ -18,5 +18,12 @@ public interface LoginSBLocal {
     
     public List<Accounts> findAll();
     
+    List<LeaveRequests> FindAllLeaveRequests(String username);
+    
     public void saveEmployee(Accounts newacc);
+    
+    void createLeaveRequest(LeaveRequests request);
+
+    
+    
 }
