@@ -3,8 +3,10 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
 package controllers;
+
 import beans.LoginSBLocal;
 import entities.Accounts;
+import entities.Employees;
 import jakarta.ejb.EJB;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -19,13 +21,14 @@ import java.util.List;
  * @author Luu Bao
  */
 public class LoginServlet extends HttpServlet {
-    
+
     @EJB
     LoginSBLocal sb;
+
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-         try (PrintWriter out = response.getWriter()) {
+        try (PrintWriter out = response.getWriter()) {
 
             String action = request.getParameter("action");
             if (null == action) {
@@ -49,8 +52,23 @@ public class LoginServlet extends HttpServlet {
                                 request.getSession().setAttribute("acc", acc);
                                 request.getRequestDispatcher("ManagerHome.jsp").forward(request, response);
                             } else if (acc.getRole().contains("Employee")) {
+                                // Lấy danh sách Employees từ Account
+                                List<Employees> employees = acc.getEmployeesList();
+
+                                if (employees == null || employees.isEmpty()) {
+                                    request.setAttribute("error", "Tài khoản chưa được gán với nhân viên nào");
+                                    request.getRequestDispatcher("login.jsp").forward(request, response);
+                                    return;
+                                }
+
+                                // Lấy Employee đầu tiên (hoặc theo logic nghiệp vụ)
+                                Employees employee = employees.get(0);
+
+                                // Lưu cả Account và Employee vào session
                                 request.getSession().setAttribute("acc", acc);
-                                request.getRequestDispatcher("EmployeeHome.jsp").forward(request, response);
+                                request.getSession().setAttribute("currentEmployee", employee);
+
+                                response.sendRedirect("AttendanceServlet");
                             }
 
                         } else {
