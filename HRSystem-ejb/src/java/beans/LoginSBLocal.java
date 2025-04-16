@@ -21,8 +21,5 @@ public interface LoginSBLocal {
     public List<Accounts> findAll();
     
     public void saveEmployee(Accounts newacc);
-    void checkIn(Employees employee);
-    void checkOut(Employees employee);
-    List<Attendance> getAttendanceHistory(Employees employee);
-    Attendance getTodayAttendance(Employees employee);
+   
 }

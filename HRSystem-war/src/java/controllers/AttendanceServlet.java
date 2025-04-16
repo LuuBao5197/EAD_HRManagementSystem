@@ -1,5 +1,6 @@
 package controllers;
 
+import beans.AttendanceSBLocal;
 import beans.LoginSBLocal;
 import entities.Attendance;
 import entities.Employees;
@@ -18,8 +19,7 @@ import java.util.List;
 public class AttendanceServlet extends HttpServlet {
 
     @EJB
-    private LoginSBLocal loginBean;
-
+    private AttendanceSBLocal sb;
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         
@@ -39,17 +39,17 @@ public class AttendanceServlet extends HttpServlet {
             request.setAttribute("todayAttendance", todayAttendance);
             
             // Lấy lịch sử chấm công
-            List<Attendance> attendanceList = loginBean.getAttendanceHistory(employee);
+            List<Attendance> attendanceList = sb.getAttendanceHistory(employee);
             request.setAttribute("attendanceList", attendanceList);
             
             if (action != null) {
                 switch (action) {
                     case "checkin":
-                        loginBean.checkIn(employee);
+                        sb.checkIn(employee);
                         request.setAttribute("message", "Check-in thành công!");
                         break;
                     case "checkout":
-                        loginBean.checkOut(employee);
+                        sb.checkOut(employee);
                         request.setAttribute("message", "Check-out thành công!");
                         break;
                 }
@@ -66,7 +66,7 @@ public class AttendanceServlet extends HttpServlet {
     private Attendance getTodayAttendance(Employees employee) {
         try {
             Date now = new Date();
-            return loginBean.getAttendanceHistory(employee).stream()
+            return sb.getAttendanceHistory(employee).stream()
                     .filter(a -> isSameDay(a.getAttendanceDate(), now))
                     .findFirst()
                     .orElse(null);
